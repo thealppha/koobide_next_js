@@ -1,0 +1,271 @@
+/* Global styles moved to globals.css */
+
+.header {
+  display: flex;
+  padding: 20px 32px 0;
+  width: 100%;
+}
+
+.title {
+  text-align: left;
+  color: rgb(29, 29, 29);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.48px;
+}
+
+.logo {
+  vertical-align: text-bottom;
+  padding-right: 0.2rem;
+  width: 48px;
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 16px;
+  margin: 0 auto;
+  width: 50%;
+}
+
+.mainContainer.hidden {
+  display: none;
+}
+
+.agentHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.agentName {
+  font-size: 20px;
+}
+
+.connectionStatus {
+  font-weight: lighter;
+  font-size: smaller;
+  display: inline-block;
+}
+
+.inputsContainer {
+  display: flex;
+  width: 100%;
+}
+
+.button {
+  font-size: 16px;
+}
+
+.mainInput {
+  height: 52px;
+  margin-bottom: 12px;
+  width: 100%;
+  align-self: center;
+  margin-top: 0;
+  position: relative;
+  height: 52px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background-color: var(--focus, rgba(255, 255, 255, .6));
+  z-index: 4;
+  border-radius: 8px;
+  align-items: center;
+  padding: 8px 16px;
+  transition: height .3s ease, background-color .3s ease;
+}
+
+.textArea {
+  position: relative;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  font-size: 16px;
+  color: var(--did-secondary-shades-800);
+  margin-top: 10px;
+  transition: margin-top .2s ease;
+  line-height: 20px;
+}
+
+.mainInput .roundButton {
+  height: 36px;
+}
+
+.roundButton {
+  height: 100%;
+  aspect-ratio: 1;
+  color: #fff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  background: #efefef;
+  border-radius: 100vmax;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 3px #00000012;
+  transition: background-color .1s ease-out;
+}
+
+.roundButton:disabled * {
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.roundButton:hover {
+  background-color: rgb(249, 249, 249);
+}
+
+.roundButton:disabled:hover {
+  background-color: #efefef;
+}
+
+.speechButton {
+  color: black;
+}
+
+.speechButton:disabled,
+.actionButton:disabled {
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.button {
+  color: rgb(9, 6, 4);
+  border: 1px solid rgb(235, 235, 235);
+  background-color: rgb(243, 243, 243);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.4px;
+  gap: 16px;
+  margin: 0.5rem;
+  outline: none;
+  cursor: pointer;
+  min-width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 6px;
+  transition: background-color 150ms ease;
+}
+
+.button:hover {
+  background-color: rgb(249, 249, 249);
+}
+
+.button:disabled {
+  color: rgb(152, 152, 152);
+  background-color: white;
+  cursor: default;
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute;
+}
+
+.disconnectedContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+  height: 75vh;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.reconnectButton {
+  color: white;
+  background-color: rgb(9, 6, 4);
+}
+
+.reconnectButton:hover {
+  background-color: #2B2A28;
+}
+
+/* Start Overlay Styles */
+.startOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.startContent {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+}
+
+.startContent h2 {
+  color: rgb(29, 29, 29);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.startContent p {
+  color: rgb(102, 102, 102);
+  font-size: 16px;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.startButton {
+  background-color: #ff882e;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-width: 120px;
+}
+
+.startButton:hover {
+  background-color: #e67a26;
+}
+
+.startButton:active {
+  transform: translateY(1px);
+}
+
+/* Blur effect for main content when overlay is visible */
+body.blurred .mainContainer {
+  filter: blur(5px);
+  pointer-events: none;
+}

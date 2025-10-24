@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAgentConnection } from '@/hooks/useAgentConnection';
+import { useRealtimeGPT } from '@/hooks/useRealtimeGPT';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
   const [agentName, setAgentName] = useState('Your Agent');
   const [connectionStatus, setConnectionStatus] = useState('');
   const [message, setMessage] = useState('');
+  const [gptError, setGptError] = useState('');
   
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const streamVideoRef = useRef<HTMLVideoElement>(null);
@@ -32,74 +34,44 @@ export default function Home() {
     idleVideoRef
   });
 
-  // Web Speech API implementation
-  const [isRecognizing, setIsRecognizing] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const {
+    connect: connectGPT,
+    disconnect: disconnectGPT,
+    isConnected: isGPTConnected,
+    isListening,
+    startListening,
+    stopListening,
+    lastResponse
+  } = useRealtimeGPT({
+    onTextReceived: (text) => {
+      if (text.trim() && isStreamReady) {
+        speak(text);
+      }
+    },
+    onError: setGptError,
+    onConnectionChange: (connected) => {
+      console.log('GPT connection status:', connected);
+    }
+  });
 
-  const toggleRecognition = () => {
-    if (!recognitionRef.current) return;
-
-    if (isRecognizing) {
-      recognitionRef.current.stop();
-      setIsRecognizing(false);
+  // GPT Realtime API integration
+  const toggleGPTListening = () => {
+    if (isListening) {
+      stopListening();
     } else {
-      if (textAreaRef.current) {
-        textAreaRef.current.value = '';
+      if (!isGPTConnected) {
+        connectGPT();
       }
-      recognitionRef.current.start();
-      setIsRecognizing(true);
+      startListening();
     }
   };
-
-  const resetRecognition = () => {
-    setIsRecognizing(false);
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-  };
-
-  // Initialize speech recognition
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      console.warn('Speech recognition not supported');
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.lang = 'en_US';
-
-    recognition.onend = () => {
-      setIsRecognizing(false);
-    };
-
-    recognition.onresult = (event: any) => {
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          const transcript = event.results[i][0].transcript;
-          if (textAreaRef.current) {
-            textAreaRef.current.value += transcript;
-          }
-        }
-      }
-    };
-
-    recognitionRef.current = recognition;
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-    };
-  }, []);
 
   const handleStart = async () => {
     setShowStartOverlay(false);
     document.body.classList.remove('blurred');
     await connect();
+    // Connect to GPT Realtime API when starting
+    await connectGPT();
   };
 
   const handleSendMessage = () => {
@@ -120,14 +92,15 @@ export default function Home() {
   };
 
   const handleSpeechToggle = () => {
-    toggleRecognition();
+    toggleGPTListening();
   };
 
+  // Cleanup GPT connection on unmount
   useEffect(() => {
-    if (isRecognizing) {
-      resetRecognition();
-    }
-  }, [isRecognizing, resetRecognition]);
+    return () => {
+      disconnectGPT();
+    };
+  }, [disconnectGPT]);
 
   return (
     <div className={styles.container}>
@@ -161,6 +134,11 @@ export default function Home() {
         <div className={styles.agentHeader}>
           <span className={styles.agentName}>{agentName}</span>
           <span className={styles.connectionStatus}>{connectionStatus}</span>
+          {gptError && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              GPT Error: {gptError}
+            </div>
+          )}
         </div>
 
         <div className={styles.videoWrapper}>
@@ -202,10 +180,10 @@ export default function Home() {
             <button
               className={`${styles.roundButton} ${styles.speechButton}`}
               onClick={handleSpeechToggle}
-              disabled={!isStreamReady}
-              title="Speech to Text - Web Speech API (MDN)"
+              disabled={!isStreamReady || !isGPTConnected}
+              title={isGPTConnected ? "GPT Realtime Voice Input" : "Connecting to GPT..."}
             >
-              {isRecognizing ? (
+              {isListening ? (
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path stroke="white" strokeWidth="1.5" d="M7 8a5 5 0 0 1 10 0v3a5 5 0 0 1-10 0V8Z"/>
                   <path stroke="white" strokeLinecap="round" strokeWidth="1.5" d="M11 8h2M10 11h4M20 10v1a8 8 0 1 1-16 0v-1M12 19v3"/>
